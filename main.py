@@ -1,37 +1,45 @@
 import random
 import pygame
+import pdb
 
-# adding point #
-green_apple = 0
-# removing point #
-red_apple = 0
+def generate_apple(grid, widht, height):
+    #breakpoint()
+    while(True):
+        x_red = random.randint(1, height - 2)
+        y_red = random.randint(1, widht - 2)
+        if(grid[x_red][y_red] == "0"):
+            grid[x_red][y_red] = "R"
+            break
+    while(True):
+        x_green = random.randint(1, height - 2)
+        y_green = random.randint(1, widht - 2)
+        if(grid[x_green][y_green] == "0"):
+            grid[x_green][y_green] = "G"
+            break
+    return(grid)
 
+def generate_map(widht, height):
+    #breakpoint()
+    grid = []
+    for i in range(height):
+        row = []
+        for j in range(widht):
+            if(i == 0 or i == height - 1 or j == 0 or j == widht - 1):
+                row.append("1")
+            else:
+                row.append("0")
+        grid.append(row)
+    return(generate_apple(grid, widht, height))
 
-map_example = [
-    ["1", "1", "1", "1", "1", "1"],
-    ["1", "0", "0", "0", "0", "1"],
-    ["1", "0", "0", "0", "0", "1"],
-    ["1", "0", "0", "0", "0", "1"],
-    ["1", "0", "0", "0", "0", "1"],
-    ["1", "0", "0", "0", "0", "1"],
-    ["1", "0", "0", "0", "0", "1"],
-    ["1", "1", "1", "1", "1", "1"]
-]
+def display_map(grid):
+    for line in grid:
+        print(line)
 
 def main():
     print("Main")
-
-    for i in range(2):
-        if(i == 1):
-            letter = 'R'
-        else:
-            letter = 'G'
-        line = random.uniform(1, 7)
-        box = random.uniform(1, 4)
-        map_example[int(line)][int(box)] = letter
-
-    for line in map_example:
-        print("-> ", line)
+    grid = generate_map(10, 10)
+    display_map(grid)
+    
 
 if(__name__ == "__main__"):
     main()
