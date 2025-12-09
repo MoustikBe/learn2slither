@@ -47,11 +47,25 @@ def generate_map(widht, height):
         grid.append(row)
     return(generate_elements(grid, widht, height))
 
+
+def new_apple(grid, height, widht, apple):
+    while(True):
+        x_apple = random.randint(1, height - 2)
+        y_apple = random.randint(1, widht - 2)
+        if(grid[x_apple][y_apple] == "0"):
+            grid[x_apple][y_apple] = apple
+            break
+    return(grid)
+
 def change_direction(x, y, grid, widht, height):
     global snake_ypos
     global snake_xpos
     if(snake_xpos + x > widht - 2 or snake_xpos + x < 1 or snake_ypos + y > height - 2 or snake_ypos + y < 1):
         return(grid)
+    if(grid[snake_xpos + x][snake_ypos + y] == 'G'):
+        grid = new_apple(grid, height, widht, 'G')
+    elif(grid[snake_xpos + x][snake_ypos + y] == 'R'):
+        grid = new_apple(grid, height, widht, 'R')
     grid[snake_xpos][snake_ypos] = '0'
     grid[snake_xpos + x][snake_ypos + y] = 'P'
     snake_xpos = snake_xpos + x
@@ -88,9 +102,9 @@ def display_map(grid):
                     screen.blit(dico_texture[0], (j * tile_sprite, i * tile_sprite))
                 elif char == "0":
                     screen.blit(dico_texture[2], (j * tile_sprite, i * tile_sprite))
-                elif char == "G":
-                    screen.blit(dico_texture[3], (j * tile_sprite, i * tile_sprite))
                 elif char == "R":
+                    screen.blit(dico_texture[3], (j * tile_sprite, i * tile_sprite))
+                elif char == "G":
                     screen.blit(dico_texture[4], (j * tile_sprite, i * tile_sprite))
         pygame.display.flip()
     pygame.quit()
