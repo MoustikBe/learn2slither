@@ -6,10 +6,12 @@ import pdb
 tile_sprite = 64
 snake_xpos = 0
 snake_ypos = 0
+snake_len = []
 
 def generate_elements(grid, widht, height):
     global snake_xpos
     global snake_ypos
+    global snake_len
     
     #breakpoint() #Debug
     while(True):
@@ -31,7 +33,26 @@ def generate_elements(grid, widht, height):
             grid[x_snake][y_snake] = "P"
             snake_xpos = x_snake
             snake_ypos = y_snake
-            break
+            snake_len.append((snake_xpos, snake_ypos))
+            i = 0
+            while(i < 2):
+                if(grid[x_snake][y_snake + 1] == '0'):
+                    snake_len.append((x_snake, y_snake + 1))
+                    y_snake = y_snake + 1
+                elif(grid[x_snake][y_snake - 1] == '0'):
+                    snake_len.append((x_snake, y_snake - 1))
+                    y_snake = y_snake - 1
+                elif(grid[x_snake + 1][y_snake] == '0'):
+                    snake_len.append((x_snake + 1, y_snake))
+                    x_snake = x_snake + 1
+                elif(grid[x_snake - 1][y_snake] == '0'):
+                    snake_len.append((x_snake - 1, y_snake))
+                    x_snake = x_snake - 1
+                else:
+                    print("Error to had snake_len")
+                i = i + 1
+                grid[x_snake][y_snake] = "P"
+        break
     return(grid)
 
 def generate_map(widht, height):
@@ -57,6 +78,40 @@ def new_apple(grid, height, widht, apple):
             break
     return(grid)
 
+def update_len(grid, _apple):
+    global snake_len
+
+    if(_apple == 'R'):
+        grid[snake_len[len(snake_len) - 1][0]][snake_len[len(snake_len) - 1][1]] = '0'
+        snake_len.pop()
+        print("Snake -1 of len")
+        if(len(snake_len) == 1):
+            print("GAME OVER, SNAKE TOO LITLE")
+            exit()
+        return(grid)
+    x_last = snake_len[len(snake_len) - 1][0] 
+    y_last = snake_len[len(snake_len) - 1][1]
+    if(grid[x_last][y_last + 1] == '0'):
+        snake_len.append((x_last, y_last + 1))
+    elif(grid[x_last][y_last - 1] == '0'):
+        snake_len.append((x_last, y_last - 1))
+    elif(grid[x_last + 1][y_last] == '0'):
+        snake_len.append((x_last + 1, y_last))
+    elif(grid[x_last - 1][y_last] == '0'):
+        snake_len.append((x_last - 1, y_last))
+    else:
+        print("Error to had snake_len")
+    print("Snake +1 of len")
+    return(grid)
+
+def snake_moov(new_x, new_y, grid):
+    grid[snake_len[len(snake_len) - 1][0]][snake_len[len(snake_len) - 1][1]] = '0'
+    for i in range(len(snake_len) - 1, 0, -1):
+        snake_len[i] = snake_len[i - 1]
+        grid[snake_len[i][0]][snake_len[i][1]] = 'P'
+    snake_len[0] = (new_x, new_y)
+    return(grid)
+
 def change_direction(x, y, grid, widht, height):
     global snake_ypos
     global snake_xpos
@@ -64,12 +119,18 @@ def change_direction(x, y, grid, widht, height):
         return(grid)
     if(grid[snake_xpos + x][snake_ypos + y] == 'G'):
         grid = new_apple(grid, height, widht, 'G')
+        grid = update_len(grid, 'G')
     elif(grid[snake_xpos + x][snake_ypos + y] == 'R'):
         grid = new_apple(grid, height, widht, 'R')
+        grid = update_len(grid, 'R')
     grid[snake_xpos][snake_ypos] = '0'
+    if(grid[snake_xpos + x][snake_ypos + y] == 'P'):
+        print("GAME OVER, SNAKE CROSSING ITSELF")
+        exit()
     grid[snake_xpos + x][snake_ypos + y] = 'P'
     snake_xpos = snake_xpos + x
     snake_ypos = snake_ypos + y
+    grid = snake_moov(snake_xpos, snake_ypos, grid)
     return(grid)
 
 def display_map(grid):
